@@ -1,0 +1,19 @@
+# Direktori artefak agent
+.commandcode/
+.claude/
+.cursor/
+.codex/
+.copilot/
+.windsurf/
+.augment/
+.continue/
+.aider/
+.gemini/
+.opencode/
+
+# Artefak OS
+.DS_Store
+Thumbs.db
+
+# Docs perencanaan & pembelajaran — pribadi, bukan bagian repo submission
+/docs/
