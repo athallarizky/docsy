@@ -3,6 +3,8 @@
 namespace App\Services\File;
 
 use App\Http\Requests\File\StoreFileRequest;
+use App\Jobs\GenerateFileThumbnailJob;
+use App\Jobs\RecordActivityLogJob;
 use App\Models\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -27,7 +29,7 @@ class UploadFileService
             'private'
         );
 
-        return File::create([
+        $file = File::create([
             ...$request->safe()->only(['title', 'folder_id', 'department_id']),
             'user_id'       => $request->user()->id,
             'original_name' => $uploaded->getClientOriginalName(),
@@ -35,5 +37,16 @@ class UploadFileService
             'mime_type'     => $uploaded->getMimeType(), // sniffed server-side
             'file_size'     => $uploaded->getSize(),
         ]);
+
+        // Fire-and-forget: the response never waits for these to finish
+        GenerateFileThumbnailJob::dispatch($file);
+        RecordActivityLogJob::dispatch(
+            $file,
+            'upload_file',
+            ['folder_id' => $file->folder_id, 'department_id' => $file->department_id],
+            request()->ip(),
+        );
+
+        return $file;
     }
 }

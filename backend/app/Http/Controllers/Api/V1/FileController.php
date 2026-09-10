@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\File\StoreFileRequest;
+use App\Jobs\RecordActivityLogJob;
 use App\Http\Requests\File\UpdateFileRequest;
 use App\Http\Resources\V1\FileResource;
 use App\Models\File;
@@ -98,6 +99,9 @@ class FileController extends Controller
     {
         $file->delete();
 
+        // Audit asynchronously — the request never waits for the insert
+        RecordActivityLogJob::dispatch($file, 'delete_file', [], request()->ip());
+
         return response()->json([
             'success' => true,
             'message' => 'File deleted successfully',
@@ -108,8 +112,10 @@ class FileController extends Controller
      * GET /api/v1/files/{id}/download — force download with the ORIGINAL name.
      * Storage::download() returns a streamed response: memory stays flat.
      */
-    public function download(File $file): StreamedResponse
+    public function download(Request $request, File $file): StreamedResponse
     {
+        RecordActivityLogJob::dispatch($file, 'download_file', [], $request->ip());
+
         return Storage::disk('private')->download(
             $file->storage_path,
             $file->original_name
