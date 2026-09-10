@@ -1,4 +1,4 @@
-# Direktori artefak agent
+# Agent-generated directories
 .commandcode/
 .claude/
 .cursor/
@@ -11,9 +11,11 @@
 .gemini/
 .opencode/
 
-# Artefak OS
+# OS artifacts
 .DS_Store
 Thumbs.db
 
-# Docs perencanaan & pembelajaran — pribadi, bukan bagian repo submission
+# Planning & learning docs — private, not part of the submission repo
 /docs/
+# IDE
+.vscode/

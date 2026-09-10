@@ -4,7 +4,7 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions \
     && install-php-extensions pdo_pgsql pgsql redis bcmath intl zip pcntl opcache
 
-# Composer binary dari image official (multi-stage copy)
+# Composer binary from the official image (multi-stage copy)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www

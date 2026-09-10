@@ -69,8 +69,8 @@ class DepartmentTest extends TestCase
     {
         $dept = Department::where('name', 'IT')->first();
 
-        // update description TANPA mengubah name —
-        // tanpa ->ignore() di rule unique, test ini gagal 422
+        // update the description WITHOUT renaming —
+        // without ->ignore() in the unique rule this test fails with 422
         $this->actingAs($this->admin())
             ->putJson("/api/v1/departments/{$dept->id}", [
                 'name'        => 'IT',
@@ -115,7 +115,7 @@ class DepartmentTest extends TestCase
     {
         $this->actingAs($this->admin())
             ->postJson('/api/v1/departments', [
-                'name' => 'Finance', // sudah ada dari seeder
+                'name' => 'Finance', // already exists from the seeder
             ])
             ->assertStatus(422)
             ->assertJsonValidationErrors('name');

@@ -18,7 +18,7 @@ services:
       redis:
         condition: service_healthy
 
-  # Nginx reverse proxy: entrypoint HTTP public
+  # Nginx reverse proxy: public HTTP entrypoint
   web:
     image: nginx:alpine
     container_name: docsy-web
@@ -33,7 +33,7 @@ services:
     depends_on:
       - app
 
-  # PostgreSQL 16: storage relasional (folder tree + recursive CTE)
+  # PostgreSQL 16: relational storage (folder tree + recursive CTEs)
   db:
     image: postgres:16-alpine
     container_name: docsy-db
@@ -72,7 +72,7 @@ services:
       timeout: 3s
       retries: 10
 
-  # Queue worker: job background (thumbnail, activity log)
+  # Queue worker: background jobs (thumbnails, activity log)
   queue:
     build:
       context: ./docker/php

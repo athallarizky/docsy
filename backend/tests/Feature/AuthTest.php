@@ -80,13 +80,12 @@ class AuthTest extends TestCase
             ->postJson('/api/v1/auth/logout')
             ->assertStatus(200);
 
-        // antar-request dalam satu test berbagi SATU proses → guard sanctum
-        // meng-cache user di memori. forgetGuards() mereplikasi boundary
-        // proses baru (seperti request php-fpm sesungguhnya) sebelum assert.
-        // RCA: docs/sprint-1/rca/2026-09-09-sanctum-guard-cache-in-tests.md
+        // Requests within one test share a SINGLE process: the sanctum
+        // guard caches the resolved user in memory. forgetGuards() simulates
+        // a fresh-process boundary (like a real php-fpm request) before asserting.
         $this->app->make(\Illuminate\Auth\AuthManager::class)->forgetGuards();
 
-        // token yang sudah dicabut tidak bisa dipakai lagi
+        // the revoked token must no longer authenticate
         $this->withToken($token)
             ->getJson('/api/v1/auth/me')
             ->assertStatus(401);
