@@ -14,7 +14,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/folders/{folder}/breadcrumbs', [FolderController::class, 'breadcrumbs']);
 
-    Route::apiResource('files', FileController::class)->only(['store']);
+    Route::get('/files/{file}/download', [FileController::class, 'download']);
+    Route::get('/files/{file}/preview', [FileController::class, 'preview']);
+
+    Route::apiResource('files', FileController::class);
     Route::apiResources([
         'departments' => DepartmentController::class,
         'folders'     => FolderController::class,

@@ -17,6 +17,11 @@ class Folder extends Model
         'created_by'
     ];
 
+    public function files(): HasMany
+    {
+        return $this->hasMany(File::class);
+    }
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Folder::class, 'parent_id');
