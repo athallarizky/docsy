@@ -38,16 +38,29 @@ class FileController extends Controller
     }
 
     /**
-     * GET /api/v1/files?folder_id=&department_id=&page=&per_page=
+     * GET /api/v1/files?search=&folder_id=&department_id=&page=&per_page=
+     * search → GIN full-text (rank-ordered); otherwise recency (partial index).
      * Soft deletes are excluded automatically by the model.
      */
     public function index(Request $request): JsonResponse
     {
+        $term = $request->string('search')->toString();
+
         $files = File::query()
             ->with(['folder', 'department', 'uploader'])
             ->when($request->filled('folder_id'), fn(Builder $q) => $q->where('folder_id', $request->integer('folder_id')))
             ->when($request->filled('department_id'), fn(Builder $q) => $q->where('department_id', $request->integer('department_id')))
-            ->orderByDesc('created_at')
+            ->when(
+                $term !== '',
+                // websearch_to_tsquery: safe for raw user input
+                // ('laporan q3' → laporan & q3; quoted phrases supported)
+                fn(Builder $q) => $q
+                    ->whereRaw("search_vector @@ websearch_to_tsquery('english', ?)", [$term])
+                    ->orderByRaw("ts_rank(search_vector, websearch_to_tsquery('english', ?)) DESC", [$term])
+            )
+            // created_at has SECOND precision — ties happen within one second,
+            // so the always-increasing id is the deterministic tiebreaker
+            ->when($term === '', fn(Builder $q) => $q->orderByDesc('created_at')->orderByDesc('id'))
             ->paginate($request->integer('per_page', 15));
 
         return response()->json([
