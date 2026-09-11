@@ -24,12 +24,6 @@ async function submit() {
     loading.value = false
   }
 }
-
-/** demo quick-fill helpers (ux-flow §2.1) */
-function fillAs(role) {
-  email.value = role === 'admin' ? 'admin@example.com' : 'viewer@example.com'
-  password.value = 'password'
-}
 </script>
 
 <template>
@@ -82,26 +76,6 @@ function fillAs(role) {
           {{ loading ? 'Signing in…' : 'Sign in' }}
         </button>
       </form>
-
-      <div class="mt-6 border-t border-slate-200 pt-4 dark:border-slate-800">
-        <p class="mb-2 text-xs uppercase tracking-wide text-slate-400">Demo accounts</p>
-        <div class="flex gap-2">
-          <button
-            type="button"
-            class="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
-            @click="fillAs('admin')"
-          >
-            Fill as Admin
-          </button>
-          <button
-            type="button"
-            class="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
-            @click="fillAs('viewer')"
-          >
-            Fill as Viewer
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
