@@ -58,12 +58,7 @@ docker compose exec app php artisan migrate --seed
 docker compose exec db psql -U docsy -d docsy_db -c 'CREATE DATABASE docsy_test;'
 ```
 
-Open **http://localhost:8000** — sign in with a demo account:
-
-| Role | Email | Password |
-|---|---|---|
-| Administrator | `admin@example.com` | `password` |
-| Viewer | `viewer@example.com` | `password` |
+Open **http://localhost:8000** — sign in with one of the demo accounts seeded by `UserSeeder` (see `backend/database/seeders/UserSeeder.php`).
 
 ## API Overview (`/api/v1`, envelope `{success, message, data}`)
 
