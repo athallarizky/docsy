@@ -10,7 +10,7 @@ use App\Http\Resources\V1\DepartmentResource;
 use App\Models\Department;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Cache;
 
 class DepartmentController extends Controller
 {
@@ -21,13 +21,20 @@ class DepartmentController extends Controller
   }
 
   /**
-   * GET /api/v1/departments — all role.
+   * GET /api/v1/departments — any role, list cached (contract).
    */
-  public function index(): AnonymousResourceCollection
+  public function index(): JsonResponse
   {
-    return DepartmentResource::collection(
+    // cache the RESOLVED arrays, not models — serialization-safe
+    $data = Cache::remember('docsy:depts:list', 3600, fn() => DepartmentResource::collection(
       Department::query()->orderBy('name')->get()
-    );
+    )->resolve());
+
+    return response()->json([
+      'success' => true,
+      'message' => 'Departments retrieved',
+      'data'    => $data,
+    ]);
   }
 
 
