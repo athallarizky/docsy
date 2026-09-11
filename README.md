@@ -42,7 +42,9 @@ git clone git@github.com:athallarizky/docsy.git && cd docsy
 # 1. Backend environment
 cp backend/.env.example backend/.env
 
-# 2. Application key
+# 2. PHP dependencies + application key
+docker run --rm -v "$PWD/backend":/app -w /app composer:2 \
+  install --no-interaction
 docker run --rm -v "$PWD/backend":/app -w /app composer:2 \
   php artisan key:generate --force
 
