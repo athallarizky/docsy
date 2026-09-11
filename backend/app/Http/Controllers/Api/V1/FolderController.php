@@ -8,6 +8,7 @@ use App\Http\Requests\Folder\UpdateFolderRequest;
 use App\Http\Resources\V1\BreadcrumbResource;
 use App\Http\Resources\V1\FolderResource;
 use App\Models\Folder;
+use App\Services\Folder\BuildFolderTreeService;
 use App\Services\Folder\DeleteFolderSubtreeService;
 use App\Services\Folder\DetectCycleService;
 use App\Services\Folder\GetBreadcrumbsService;
@@ -120,6 +121,18 @@ class FolderController extends Controller
             'data'    => BreadcrumbResource::collection(
                 $breadcrumbs->execute($folder->id)
             ),
+        ]);
+    }
+
+    /**
+     * GET /api/v1/folders/tree — full nested tree (one query, cached).
+     */
+    public function tree(BuildFolderTreeService $builder): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Folder tree',
+            'data'    => $builder->execute(),
         ]);
     }
 }
