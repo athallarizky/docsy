@@ -8,10 +8,8 @@ export function useDarkMode() {
   const apply = () => document.documentElement.classList.toggle('dark', isDark.value)
 
   const init = () => {
-    isDark.value =
-      localStorage.getItem(THEME_KEY) === 'dark' ||
-      (!localStorage.getItem(THEME_KEY) &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches)
+    // Light is the default — dark only when explicitly chosen (predictable demo)
+    isDark.value = localStorage.getItem(THEME_KEY) === 'dark'
     apply()
   }
 

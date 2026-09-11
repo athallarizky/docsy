@@ -13,6 +13,7 @@ import FolderModal from '../components/explorer/FolderModal.vue'
 import UploadModal from '../components/files/UploadModal.vue'
 import PreviewModal from '../components/files/PreviewModal.vue'
 import EditFileModal from '../components/files/EditFileModal.vue'
+import DepartmentModal from '../components/explorer/DepartmentModal.vue'
 
 const route = useRoute()
 const auth = useAuthStore()
@@ -24,6 +25,7 @@ const departments = ref([])
 const searchInput = ref('')
 
 const showFolderModal = ref(false)
+const showDeptModal = ref(false)
 const folderModalMode = ref('create')
 const renamingFolder = ref(null)
 const showUpload = ref(false)
@@ -55,6 +57,17 @@ async function submitFolder(name) {
       toastSuccess(`Folder "${name}" created`)
     }
     showFolderModal.value = false
+  } catch (e) {
+    toastError(e.errors ? Object.values(e.errors).flat().join(' ') : e.message)
+  }
+}
+
+async function submitDepartment(name) {
+  try {
+    await departmentsApi.create({ name })
+    departments.value = await departmentsApi.list()
+    showDeptModal.value = false
+    toastSuccess(`Department "${name}" created`)
   } catch (e) {
     toastError(e.errors ? Object.values(e.errors).flat().join(' ') : e.message)
   }
@@ -109,7 +122,7 @@ onMounted(() => {
 
     <!-- toolbar -->
     <div class="flex flex-wrap items-center gap-2">
-      <div class="flex flex-1 items-center gap-2">
+      <div class="flex flex-1 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
         <input
           v-model="searchInput"
           type="search"
@@ -119,7 +132,7 @@ onMounted(() => {
         />
         <select
           v-model.number="files.departmentFilter"
-          class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800"
+          class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 sm:w-auto"
         >
           <option :value="null">All departments</option>
           <option v-for="dept in departments" :key="dept.id" :value="dept.id">{{ dept.name }}</option>
@@ -136,7 +149,16 @@ onMounted(() => {
         </button>
         <button
           type="button"
-          class="rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+          class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-800"
+          @click="showDeptModal = true"
+        >
+          + Department
+        </button>
+        <button
+          type="button"
+          class="rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
+          :disabled="!folders.currentFolderId"
+          :title="folders.currentFolderId ? 'Upload into this folder' : 'Open a folder first — files live inside folders'"
           @click="showUpload = true"
         >
           ⬆ Upload File
@@ -223,7 +245,7 @@ onMounted(() => {
       </div>
 
       <div v-else-if="!files.files.length" class="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-400 dark:border-slate-700">
-        {{ isSearch ? 'No files match your search' : 'No files in this folder' }}
+        {{ isSearch ? 'No files match your search' : folders.currentFolderId ? 'No files in this folder' : 'Open a folder to see & upload files' }}
       </div>
 
       <FileTable v-else :files="files.files" :is-admin="auth.isAdmin" @open="previewFile = $event" @delete="deleteFile" />
@@ -253,9 +275,11 @@ onMounted(() => {
     <UploadModal
       :open="showUpload"
       :folder-id="folders.currentFolderId"
+      :folder-name="folders.breadcrumbs.at(-1)?.name"
       @close="showUpload = false"
       @uploaded="files.fetchFiles({ folderId: folders.currentFolderId })"
     />
+    <DepartmentModal :open="showDeptModal" @close="showDeptModal = false" @submit="submitDepartment" />
     <PreviewModal :open="Boolean(previewFile)" :file="previewFile" @close="previewFile = null" @edit="((editingFile = $event), (previewFile = null))" />
     <EditFileModal
       :open="Boolean(editingFile)"

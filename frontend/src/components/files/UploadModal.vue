@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import AppModal from '../common/AppModal.vue'
 import { filesApi } from '../../api/files'
 import { departmentsApi } from '../../api/departments'
@@ -8,6 +8,7 @@ import { useToast } from '../../composables/useToast'
 const props = defineProps({
   open: Boolean,
   folderId: { type: Number, default: null },
+  folderName: { type: String, default: '' },
 })
 const emit = defineEmits(['close', 'uploaded'])
 
@@ -22,12 +23,17 @@ const progress = ref(0)
 const uploading = ref(false)
 const error = ref(null)
 
-const canSubmit = computed(() => title.value.trim() && departmentId.value && file.value)
+const canSubmit = computed(() => title.value.trim() && departmentId.value && file.value && props.folderId)
 
 async function loadDepartments() {
-  if (departments.value.length) return
   departments.value = await departmentsApi.list()
 }
+
+// refresh on each open — a department may have just been created elsewhere
+watch(
+  () => props.open,
+  (open) => open && loadDepartments(),
+)
 
 function onFileChosen(f) {
   file.value = f
@@ -66,7 +72,10 @@ async function submit() {
 
 <template>
   <AppModal :open="open" title="Upload file" @close="emit('close')">
-    <form class="space-y-4" @submit.prevent="submit" @vue:mounted="loadDepartments">
+    <form class="space-y-4" @submit.prevent="submit">
+      <p class="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+        Uploading into 📁 {{ folderName || 'current folder' }}
+      </p>
       <!-- dropzone -->
       <label
         class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-8 text-center transition"

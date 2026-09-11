@@ -24,6 +24,25 @@ async function handleLogout() {
         <span class="hidden sm:inline">Docsy</span>
       </RouterLink>
 
+      <!-- mobile nav (sidebar is hidden below md) -->
+      <nav class="flex items-center gap-1 md:hidden">
+        <RouterLink
+          :to="{ name: 'explorer' }"
+          class="rounded-lg px-2 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+          active-class="bg-brand-50 text-brand-700 dark:bg-brand-700/30 dark:text-brand-100"
+        >
+          📁
+        </RouterLink>
+        <RouterLink
+          v-if="auth.isAdmin"
+          :to="{ name: 'dashboard' }"
+          class="rounded-lg px-2 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+          active-class="bg-brand-50 text-brand-700 dark:bg-brand-700/30 dark:text-brand-100"
+        >
+          📊
+        </RouterLink>
+      </nav>
+
       <div class="ml-auto flex items-center gap-3">
         <!-- role badge -->
         <span
