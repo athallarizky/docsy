@@ -18,16 +18,16 @@ services:
       redis:
         condition: service_healthy
 
-  # Nginx reverse proxy: public HTTP entrypoint
+  # Nginx: serves the built SPA and proxies /api to php-fpm.
+  # Multi-stage build compiles the SPA with node — reviewers need no node.
   web:
-    image: nginx:alpine
+    build:
+      context: ..
+      dockerfile: backend/docker/web/Dockerfile
     container_name: docsy-web
     restart: unless-stopped
     ports:
       - "8000:80"
-    volumes:
-      - ./:/var/www:ro
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - docsy
     depends_on:
