@@ -31,7 +31,8 @@ export const filesApi = {
   upload({ title, folderId, departmentId, file, onProgress }) {
     const form = new FormData()
     form.append('title', title)
-    form.append('folder_id', folderId)
+    // never stringify null — omit instead (literal "null" fails the backend integer rule)
+    if (folderId) form.append('folder_id', folderId)
     form.append('department_id', departmentId)
     form.append('file', file)
 
