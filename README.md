@@ -2,6 +2,12 @@
 
 Full-stack file management system: **Laravel 11 REST API + Vue 3 SPA + PostgreSQL 16 + Redis 7**, fully containerized. One command to run, one port for everything.
 
+## Screenshot
+<img width="1251" height="826" alt="image" src="https://github.com/user-attachments/assets/6bb750bb-762b-47fc-a6f7-932a78476a80" />
+<img width="1251" height="827" alt="image" src="https://github.com/user-attachments/assets/8329486a-943b-4d10-bdec-b7e2bb7c09ec" />
+
+
+
 ## Features
 
 - **Auth & RBAC** — token auth (Sanctum); `administrator` (full CRUD) vs `viewer` (read/download only, 403 on mutations)
