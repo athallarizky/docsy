@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;  # note: Eloquent\Attributes, not Database\Attributes
+use App\Observers\FolderObserver;
 
+#[ObservedBy(FolderObserver::class)]
 class Folder extends Model
 {
     use SoftDeletes;
