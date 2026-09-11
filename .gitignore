@@ -16,6 +16,8 @@
 Thumbs.db
 
 # Planning & learning docs — private, not part of the submission repo
+/docs
 /docs/
+
 # IDE
 .vscode/
